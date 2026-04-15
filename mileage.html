@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mileage Claim — The Station Richmond</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F7F4EE;
+    --ink: #1C1C1A;
+    --ink-light: #5A5955;
+    --ink-faint: #9A9890;
+    --green: #2D6A4F;
+    --green-light: #E8F2EC;
+    --green-mid: #52B788;
+    --border: #DDD9D0;
+    --white: #FFFFFF;
+    --warning-bg: #FDF0E3;
+    --warning-text: #92400E;
+    --warning-border: #F6C48C;
+    --danger-bg: #FEF2F2;
+    --danger-text: #991B1B;
+    --danger-border: #FECACA;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--ink); min-height: 100vh; }
+  header {
+    background: var(--white); border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem; display: flex; align-items: center; gap: 1.5rem;
+  }
+  .back { font-size: 0.875rem; color: var(--ink-light); text-decoration: none; display: flex; align-items: center; gap: 6px; }
+  .back:hover { color: var(--green); }
+  .header-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 400; }
+  main { max-width: 660px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+  .page-header { margin-bottom: 2rem; }
+  .page-header h1 { font-family: 'Playfair Display', serif; font-size: 1.75rem; font-weight: 400; margin-bottom: 0.5rem; }
+  .page-header p { font-size: 0.9rem; color: var(--ink-light); line-height: 1.6; }
+
+  .policy {
+    background: var(--green-light); border: 1px solid #B7DFC9; border-radius: 10px;
+    padding: 1.25rem 1.5rem; margin-bottom: 2rem;
+  }
+  .policy h3 { font-size: 0.75rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--green); margin-bottom: 0.75rem; }
+  .policy ul { list-style: none; }
+  .policy li { font-size: 0.875rem; color: #1F4D38; line-height: 1.6; padding: 2px 0 2px 16px; position: relative; }
+  .policy li::before { content: "–"; position: absolute; left: 0; color: var(--green-mid); }
+
+  .card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 1.75rem; margin-bottom: 1.25rem; }
+  .section-label {
+    font-size: 0.7rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--ink-faint); margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem; border-bottom: 1px solid var(--border);
+  }
+  .field { margin-bottom: 1rem; }
+  .field:last-child { margin-bottom: 0; }
+  label { display: block; font-size: 0.8rem; font-weight: 500; color: var(--ink-light); margin-bottom: 5px; }
+  input, select, textarea {
+    width: 100%; font-size: 0.9rem; color: var(--ink);
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 8px; padding: 9px 12px; font-family: 'DM Sans', sans-serif;
+    transition: border-color 0.15s;
+  }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--green-mid); }
+  input[readonly] { background: var(--cream); color: var(--ink-light); }
+  textarea { resize: vertical; min-height: 80px; }
+  .hint { font-size: 0.78rem; color: var(--ink-faint); margin-top: 4px; line-height: 1.5; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media(max-width:480px){.row2{grid-template-columns:1fr}}
+
+  .start-opts { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+  .start-btn {
+    padding: 7px 14px; border: 1px solid var(--border); border-radius: 8px;
+    font-size: 0.85rem; cursor: pointer; background: var(--white); color: var(--ink-light);
+    font-family: 'DM Sans', sans-serif; transition: all 0.12s;
+  }
+  .start-btn.active { background: var(--green-light); color: var(--green); border-color: var(--green-mid); font-weight: 500; }
+
+  .warning {
+    background: var(--warning-bg); border: 1px solid var(--warning-border);
+    border-radius: 8px; padding: 10px 14px; font-size: 0.85rem;
+    color: var(--warning-text); margin-top: 10px; display: none; line-height: 1.6;
+  }
+
+  .total-area {
+    background: var(--cream); border-radius: 8px; padding: 1.25rem;
+    margin-top: 1.25rem; display: flex; justify-content: space-between; align-items: center;
+  }
+  .total-area .label { font-size: 0.875rem; color: var(--ink-light); }
+  .total-area .amount { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--ink); }
+
+  .proof-row { display: flex; gap: 8px; }
+  .proof-btn {
+    flex: 1; padding: 9px; border: 1px solid var(--border); border-radius: 8px;
+    font-size: 0.85rem; cursor: pointer; background: var(--white); color: var(--ink-light);
+    font-family: 'DM Sans', sans-serif; text-align: center; transition: all 0.12s;
+  }
+  .proof-btn.yes { background: var(--green-light); color: var(--green); border-color: var(--green-mid); }
+  .proof-btn.no { background: var(--danger-bg); color: var(--danger-text); border-color: var(--danger-border); }
+
+  .declaration {
+    font-size: 0.85rem; color: var(--ink-light); line-height: 1.7;
+    background: var(--cream); border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem;
+  }
+
+  .submit-btn {
+    width: 100%; padding: 13px; border: none; border-radius: 10px;
+    background: var(--green); color: var(--white); font-size: 1rem;
+    font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer;
+    transition: background 0.15s;
+  }
+  .submit-btn:hover { background: #1F4D38; }
+  .submit-btn:disabled { background: var(--ink-faint); cursor: not-allowed; }
+
+  .success {
+    display: none; background: var(--green-light); border: 1px solid var(--green-mid);
+    border-radius: 10px; padding: 1.5rem; text-align: center; margin-top: 1.25rem;
+  }
+  .success h3 { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--green); margin-bottom: 0.5rem; }
+  .success p { font-size: 0.875rem; color: #1F4D38; line-height: 1.6; }
+</style>
+</head>
+<body>
+<header>
+  <a href="index.html" class="back">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M13 8H3M7 4L3 8l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    All forms
+  </a>
+  <span class="header-title">Mileage claim — The Station Richmond</span>
+</header>
+<main>
+  <div class="page-header">
+    <h1>Mileage claim form</h1>
+    <p>Complete all fields and submit. Your claim will be sent to the Chief Executive for sign-off. Payment is made into your wages bank account following approval.</p>
+  </div>
+
+  <div class="policy">
+    <h3>Policy summary</h3>
+    <ul>
+      <li>45p per mile from The Station (DL10 4LD) or your home if not attending that day</li>
+      <li>100-mile cap per journey at 45p — beyond 100 miles, claim equivalent public transport cost (pre-agree with Chief Executive)</li>
+      <li>All journeys must be essential to your role or pre-agreed with the Chief Executive</li>
+      <li>Proof of journey required (e.g. receipt from destination)</li>
+      <li>No claims for your usual commute to your agreed workplace</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <p class="section-label">Employee details</p>
+    <div class="row2">
+      <div class="field"><label>Name of employee</label><input type="text" id="name" placeholder="Full name"></div>
+      <div class="field"><label>Date of journey</label><input type="date" id="date"></div>
+    </div>
+    <div class="field"><label>Email address (for confirmation)</label><input type="email" id="email" placeholder="your@email.com"></div>
+  </div>
+
+  <div class="card">
+    <p class="section-label">Journey details</p>
+    <div class="field">
+      <label>Start location</label>
+      <div class="start-opts">
+        <button type="button" class="start-btn" onclick="setStart(this,'The Station, Station Yard, Richmond, DL10 4LD')">The Station, Richmond</button>
+        <button type="button" class="start-btn" onclick="setStart(this,'')">Home address</button>
+      </div>
+      <input type="text" id="start" placeholder="Enter start address">
+    </div>
+    <div class="field"><label>Destination</label><input type="text" id="dest" placeholder="Full destination address"></div>
+    <div class="field"><label>Reason for journey</label><textarea id="reason" placeholder="Why was this journey essential to your role?"></textarea></div>
+    <div class="row2">
+      <div class="field">
+        <label>Total mileage (miles)</label>
+        <input type="number" id="miles" min="0" step="0.1" placeholder="0" oninput="calc()">
+        <div class="hint">Enter the full round trip if applicable.</div>
+        <div class="warning" id="cap-warn">⚠ This journey exceeds 100 miles. You must claim equivalent public transport cost, agreed with the Chief Executive in advance. Do not submit this form until that agreement is in place.</div>
+      </div>
+      <div class="field">
+        <label>Rate per mile</label>
+        <input type="text" value="45p (RBPT standard rate)" readonly>
+      </div>
+    </div>
+    <div class="total-area">
+      <span class="label">Total expenses claim<br><span style="font-size:0.78rem;color:var(--ink-faint)">(total mileage × 45p)</span></span>
+      <span class="amount" id="total">£0.00</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="section-label">Proof of journey</p>
+    <div class="field">
+      <label>Proof enclosed with this claim?</label>
+      <div class="proof-row">
+        <button type="button" class="proof-btn" id="py" onclick="setProof('yes')">Yes — enclosed</button>
+        <button type="button" class="proof-btn" id="pw" onclick="setProof('will')">Will follow shortly</button>
+        <button type="button" class="proof-btn" id="pn" onclick="setProof('no')">Not available</button>
+      </div>
+      <div class="hint">e.g. receipt from destination, parking ticket, event confirmation email</div>
+    </div>
+    <div class="field"><label>Additional notes (optional)</label><textarea id="notes" placeholder="Any further information for the Chief Executive..."></textarea></div>
+  </div>
+
+  <div class="card">
+    <p class="section-label">Declaration</p>
+    <div class="declaration">
+      By submitting this form I confirm that this journey was essential to my employment role at The Station Richmond, that the mileage stated is accurate to the best of my knowledge, and that I understand this claim is subject to approval by the Chief Executive before any payment is made.
+    </div>
+    <div class="row2">
+      <div class="field"><label>Signature (type full name)</label><input type="text" id="sig" placeholder="Type your full name"></div>
+      <div class="field"><label>Date signed</label><input type="date" id="sig-date"></div>
+    </div>
+    <button class="submit-btn" onclick="submitForm()">Submit mileage claim</button>
+    <div class="success" id="success">
+      <h3>Claim submitted</h3>
+      <p>Your mileage claim has been sent to the Chief Executive for sign-off. You'll receive a confirmation email shortly. Payment will be made into your wages bank account once approved.</p>
+    </div>
+  </div>
+</main>
+<script>
+const today = new Date().toISOString().split('T')[0];
+document.getElementById('date').value = today;
+document.getElementById('sig-date').value = today;
+let proofVal = '';
+
+function setStart(btn, val) {
+  document.querySelectorAll('.start-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const inp = document.getElementById('start');
+  inp.value = val;
+  if (!val) { inp.placeholder = 'Enter your home address'; inp.focus(); }
+  else { inp.placeholder = 'Enter start address'; }
+}
+
+function calc() {
+  const miles = parseFloat(document.getElementById('miles').value) || 0;
+  const warn = document.getElementById('cap-warn');
+  warn.style.display = miles > 100 ? 'block' : 'none';
+  const total = Math.min(miles, 100) * 0.45;
+  document.getElementById('total').textContent = miles > 100 ? '— see warning' : '£' + total.toFixed(2);
+}
+
+function setProof(val) {
+  proofVal = val;
+  document.getElementById('py').className = 'proof-btn' + (val === 'yes' ? ' yes' : '');
+  document.getElementById('pw').className = 'proof-btn' + (val === 'will' ? ' yes' : '');
+  document.getElementById('pn').className = 'proof-btn' + (val === 'no' ? ' no' : '');
+}
+
+function submitForm() {
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const miles = parseFloat(document.getElementById('miles').value) || 0;
+  const sig = document.getElementById('sig').value.trim();
+  const start = document.getElementById('start').value.trim();
+  const dest = document.getElementById('dest').value.trim();
+  if (!name) { alert('Please enter your name.'); return; }
+  if (!email) { alert('Please enter your email address.'); return; }
+  if (!start) { alert('Please enter a start location.'); return; }
+  if (!dest) { alert('Please enter a destination.'); return; }
+  if (!miles) { alert('Please enter the total mileage.'); return; }
+  if (miles > 100) { alert('Claims over 100 miles must use equivalent public transport cost, agreed with the Chief Executive first.'); return; }
+  if (!sig) { alert('Please sign by typing your full name.'); return; }
+
+  /* ── FORMSPREE: replace YOUR_ENDPOINT below ── */
+  const ENDPOINT = 'https://formspree.io/f/YOUR_ENDPOINT';
+
+  const data = {
+    _subject: `Mileage claim — ${name}`,
+    employee: name,
+    email: email,
+    journey_date: document.getElementById('date').value,
+    start: start,
+    destination: dest,
+    reason: document.getElementById('reason').value,
+    miles: miles,
+    total_claim: '£' + (miles * 0.45).toFixed(2),
+    proof: proofVal || 'not specified',
+    notes: document.getElementById('notes').value,
+    signature: sig,
+    signed_date: document.getElementById('sig-date').value
+  };
+
+  if (ENDPOINT.includes('YOUR_ENDPOINT')) {
+    document.getElementById('success').style.display = 'block';
+    document.querySelector('.submit-btn').disabled = true;
+    return;
+  }
+
+  fetch(ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify(data)
+  }).then(r => {
+    if (r.ok) {
+      document.getElementById('success').style.display = 'block';
+      document.querySelector('.submit-btn').disabled = true;
+    } else { alert('Submission failed. Please try again or contact your manager.'); }
+  }).catch(() => alert('Network error. Please check your connection and try again.'));
+}
+</script>
+</body>
+</html>
