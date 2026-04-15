@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Expense Claim — The Station Richmond</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F7F4EE;
+    --ink: #1C1C1A;
+    --ink-light: #5A5955;
+    --ink-faint: #9A9890;
+    --amber: #B5620E;
+    --amber-light: #FDF0E3;
+    --amber-mid: #E8943A;
+    --amber-dark: #7C3D08;
+    --green: #2D6A4F;
+    --green-light: #E8F2EC;
+    --green-mid: #52B788;
+    --border: #DDD9D0;
+    --white: #FFFFFF;
+    --danger-bg: #FEF2F2;
+    --danger-text: #991B1B;
+    --danger-border: #FECACA;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--ink); min-height: 100vh; }
+  header {
+    background: var(--white); border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem; display: flex; align-items: center; gap: 1.5rem;
+  }
+  .back { font-size: 0.875rem; color: var(--ink-light); text-decoration: none; display: flex; align-items: center; gap: 6px; }
+  .back:hover { color: var(--amber); }
+  .header-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 400; }
+  main { max-width: 660px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+  .page-header { margin-bottom: 2rem; }
+  .page-header h1 { font-family: 'Playfair Display', serif; font-size: 1.75rem; font-weight: 400; margin-bottom: 0.5rem; }
+  .page-header p { font-size: 0.9rem; color: var(--ink-light); line-height: 1.6; }
+
+  .policy {
+    background: var(--amber-light); border: 1px solid #F6C48C; border-radius: 10px;
+    padding: 1.25rem 1.5rem; margin-bottom: 2rem;
+  }
+  .policy h3 { font-size: 0.75rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--amber); margin-bottom: 0.75rem; }
+  .policy ul { list-style: none; }
+  .policy li { font-size: 0.875rem; color: var(--amber-dark); line-height: 1.6; padding: 2px 0 2px 16px; position: relative; }
+  .policy li::before { content: "–"; position: absolute; left: 0; color: var(--amber-mid); }
+
+  .card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 1.75rem; margin-bottom: 1.25rem; }
+  .section-label {
+    font-size: 0.7rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--ink-faint); margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem; border-bottom: 1px solid var(--border);
+  }
+  .field { margin-bottom: 1rem; }
+  .field:last-child { margin-bottom: 0; }
+  label { display: block; font-size: 0.8rem; font-weight: 500; color: var(--ink-light); margin-bottom: 5px; }
+  input, select, textarea {
+    width: 100%; font-size: 0.9rem; color: var(--ink);
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 8px; padding: 9px 12px; font-family: 'DM Sans', sans-serif;
+    transition: border-color 0.15s;
+  }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--amber-mid); }
+  textarea { resize: vertical; min-height: 80px; }
+  .hint { font-size: 0.78rem; color: var(--ink-faint); margin-top: 4px; line-height: 1.5; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media(max-width:480px){.row2{grid-template-columns:1fr}}
+
+  /* Expense items table */
+  .items-header {
+    display: grid; grid-template-columns: 1fr 130px 100px 36px;
+    gap: 8px; margin-bottom: 6px;
+  }
+  .items-header span { font-size: 0.75rem; font-weight: 500; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.06em; }
+  .item-row {
+    display: grid; grid-template-columns: 1fr 130px 100px 36px;
+    gap: 8px; margin-bottom: 6px; align-items: center;
+  }
+  .item-row input, .item-row select { margin: 0; }
+  .remove-btn {
+    width: 36px; height: 36px; border: 1px solid var(--danger-border);
+    border-radius: 8px; background: var(--danger-bg); color: var(--danger-text);
+    font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-family: monospace; transition: all 0.12s;
+  }
+  .remove-btn:hover { background: #FEE2E2; }
+  .add-item-btn {
+    width: 100%; padding: 9px; border: 1px dashed var(--border);
+    border-radius: 8px; background: transparent; color: var(--ink-light);
+    font-size: 0.875rem; font-family: 'DM Sans', sans-serif; cursor: pointer;
+    margin-top: 4px; transition: all 0.12s;
+  }
+  .add-item-btn:hover { border-color: var(--amber-mid); color: var(--amber); }
+
+  .total-area {
+    background: var(--cream); border-radius: 8px; padding: 1.25rem;
+    margin-top: 1.25rem; display: flex; justify-content: space-between; align-items: center;
+  }
+  .total-area .label { font-size: 0.875rem; color: var(--ink-light); }
+  .total-area .amount { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--ink); }
+
+  .proof-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .proof-btn {
+    flex: 1; min-width: 120px; padding: 9px; border: 1px solid var(--border); border-radius: 8px;
+    font-size: 0.85rem; cursor: pointer; background: var(--white); color: var(--ink-light);
+    font-family: 'DM Sans', sans-serif; text-align: center; transition: all 0.12s;
+  }
+  .proof-btn.yes { background: var(--green-light); color: var(--green); border-color: var(--green-mid); }
+  .proof-btn.part { background: var(--amber-light); color: var(--amber); border-color: var(--amber-mid); }
+  .proof-btn.no { background: var(--danger-bg); color: var(--danger-text); border-color: var(--danger-border); }
+
+  .declaration {
+    font-size: 0.85rem; color: var(--ink-light); line-height: 1.7;
+    background: var(--cream); border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem;
+  }
+  .submit-btn {
+    width: 100%; padding: 13px; border: none; border-radius: 10px;
+    background: var(--amber); color: var(--white); font-size: 1rem;
+    font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer;
+    transition: background 0.15s;
+  }
+  .submit-btn:hover { background: var(--amber-dark); }
+  .submit-btn:disabled { background: var(--ink-faint); cursor: not-allowed; }
+  .success {
+    display: none; background: var(--green-light); border: 1px solid var(--green-mid);
+    border-radius: 10px; padding: 1.5rem; text-align: center; margin-top: 1.25rem;
+  }
+  .success h3 { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--green); margin-bottom: 0.5rem; }
+  .success p { font-size: 0.875rem; color: #1F4D38; line-height: 1.6; }
+  @media(max-width:540px){
+    .items-header{grid-template-columns:1fr 90px 80px 36px}
+    .item-row{grid-template-columns:1fr 90px 80px 36px}
+  }
+</style>
+</head>
+<body>
+<header>
+  <a href="index.html" class="back">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M13 8H3M7 4L3 8l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    All forms
+  </a>
+  <span class="header-title">Expense claim — The Station Richmond</span>
+</header>
+<main>
+  <div class="page-header">
+    <h1>Expense claim form</h1>
+    <p>Use this form to claim reimbursement for work-related expenses paid from your own pocket. All claims require Chief Executive approval before payment.</p>
+  </div>
+
+  <div class="policy">
+    <h3>Expense policy summary</h3>
+    <ul>
+      <li>Expenses must be incurred wholly and necessarily in the course of your duties at The Station Richmond</li>
+      <li>All items over £5 must be supported by a receipt — claims without receipts may be declined</li>
+      <li>Expenses should be submitted within 30 days of the purchase date</li>
+      <li>Personal items, alcohol (unless pre-approved for a specific event), and non-work purchases are not claimable</li>
+      <li>Claims must be approved by the Chief Executive before reimbursement is made</li>
+      <li>Reimbursement is paid into your wages bank account alongside your next pay run</li>
+      <li>Any expense over £50 should be agreed with the Chief Executive before the purchase where possible</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <p class="section-label">Employee details</p>
+    <div class="row2">
+      <div class="field"><label>Name of employee</label><input type="text" id="name" placeholder="Full name"></div>
+      <div class="field"><label>Date of claim</label><input type="date" id="claim-date"></div>
+    </div>
+    <div class="field"><label>Email address (for confirmation)</label><input type="email" id="email" placeholder="your@email.com"></div>
+    <div class="field"><label>Department / area</label>
+      <select id="dept">
+        <option value="">Select department...</option>
+        <option>Cinema</option>
+        <option>Café</option>
+        <option>Gallery</option>
+        <option>Shop</option>
+        <option>Administration</option>
+        <option>Operations</option>
+        <option>Other</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="section-label">Expense items</p>
+    <div class="items-header">
+      <span>Description</span>
+      <span>Category</span>
+      <span>Amount (£)</span>
+      <span></span>
+    </div>
+    <div id="items-container"></div>
+    <button type="button" class="add-item-btn" onclick="addItem()">+ Add expense item</button>
+    <div class="total-area">
+      <span class="label">Total claim amount</span>
+      <span class="amount" id="total">£0.00</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="section-label">Receipts &amp; supporting evidence</p>
+    <div class="field">
+      <label>Receipts status</label>
+      <div class="proof-row">
+        <button type="button" class="proof-btn" id="r-yes" onclick="setReceipts('yes')">All receipts enclosed</button>
+        <button type="button" class="proof-btn" id="r-part" onclick="setReceipts('part')">Some receipts missing</button>
+        <button type="button" class="proof-btn" id="r-no" onclick="setReceipts('no')">No receipts available</button>
+      </div>
+      <div class="hint">Physical receipts can be handed to your manager. Digital receipts can be emailed to the Chief Executive alongside this submission.</div>
+    </div>
+    <div class="field"><label>Payment method used</label>
+      <select id="payment">
+        <option value="">Select...</option>
+        <option>Paid personally — requesting reimbursement</option>
+        <option>RBPT / Station company card</option>
+        <option>Other</option>
+      </select>
+    </div>
+    <div class="field"><label>Additional notes or context (optional)</label>
+      <textarea id="notes" placeholder="Any further details for the Chief Executive, e.g. reason for missing receipt, event context..."></textarea>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="section-label">Declaration</p>
+    <div class="declaration">
+      By submitting this form I confirm that all expenses listed were incurred wholly and necessarily in the course of my duties at The Station Richmond, that the amounts stated are accurate, and that I have not already been reimbursed for these items. I understand that all claims are subject to approval by the Chief Executive and that false claims may result in disciplinary action.
+    </div>
+    <div class="row2">
+      <div class="field"><label>Signature (type full name)</label><input type="text" id="sig" placeholder="Type your full name"></div>
+      <div class="field"><label>Date signed</label><input type="date" id="sig-date"></div>
+    </div>
+    <button class="submit-btn" onclick="submitForm()">Submit expense claim</button>
+    <div class="success" id="success">
+      <h3>Claim submitted</h3>
+      <p>Your expense claim has been sent to the Chief Executive for approval. You'll receive a confirmation email shortly. Reimbursement will be made into your wages bank account following approval.</p>
+    </div>
+  </div>
+</main>
+
+<script>
+const today = new Date().toISOString().split('T')[0];
+document.getElementById('claim-date').value = today;
+document.getElementById('sig-date').value = today;
+let receiptsVal = '';
+
+const CATEGORIES = ['Travel','Accommodation','Meals & refreshments','Printing & stationery','Postage','Equipment','Training & events','Marketing','Cleaning & maintenance','Other'];
+
+function addItem(desc='', cat='', amt='') {
+  const c = document.getElementById('items-container');
+  const row = document.createElement('div');
+  row.className = 'item-row';
+  const catOpts = CATEGORIES.map(c2 => `<option${c2===cat?' selected':''}>${c2}</option>`).join('');
+  row.innerHTML = `
+    <input type="text" placeholder="e.g. Train to York" value="${desc}">
+    <select>${catOpts}</select>
+    <input type="number" min="0" step="0.01" placeholder="0.00" value="${amt}" oninput="calcTotal()">
+    <button type="button" class="remove-btn" onclick="removeItem(this)" title="Remove">×</button>
+  `;
+  c.appendChild(row);
+  calcTotal();
+}
+
+function removeItem(btn) { btn.closest('.item-row').remove(); calcTotal(); }
+
+function calcTotal() {
+  let t = 0;
+  document.querySelectorAll('#items-container input[type="number"]').forEach(i => { t += parseFloat(i.value) || 0; });
+  document.getElementById('total').textContent = '£' + t.toFixed(2);
+}
+
+function setReceipts(val) {
+  receiptsVal = val;
+  document.getElementById('r-yes').className = 'proof-btn' + (val==='yes'?' yes':'');
+  document.getElementById('r-part').className = 'proof-btn' + (val==='part'?' part':'');
+  document.getElementById('r-no').className = 'proof-btn' + (val==='no'?' no':'');
+}
+
+function submitForm() {
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const sig = document.getElementById('sig').value.trim();
+  const rows = document.querySelectorAll('#items-container .item-row');
+  if (!name) { alert('Please enter your name.'); return; }
+  if (!email) { alert('Please enter your email address.'); return; }
+  if (rows.length === 0) { alert('Please add at least one expense item.'); return; }
+  if (!sig) { alert('Please sign by typing your full name.'); return; }
+
+  const items = [];
+  rows.forEach(r => {
+    const inputs = r.querySelectorAll('input,select');
+    items.push({ desc: inputs[0].value, cat: inputs[1].value, amt: inputs[2].value });
+  });
+
+  const ENDPOINT = 'https://formspree.io/f/YOUR_ENDPOINT';
+
+  const data = {
+    _subject: `Expense claim — ${name}`,
+    employee: name,
+    email: email,
+    claim_date: document.getElementById('claim-date').value,
+    department: document.getElementById('dept').value,
+    items: JSON.stringify(items),
+    total: document.getElementById('total').textContent,
+    receipts: receiptsVal || 'not specified',
+    payment_method: document.getElementById('payment').value,
+    notes: document.getElementById('notes').value,
+    signature: sig,
+    signed_date: document.getElementById('sig-date').value
+  };
+
+  if (ENDPOINT.includes('YOUR_ENDPOINT')) {
+    document.getElementById('success').style.display = 'block';
+    document.querySelector('.submit-btn').disabled = true;
+    return;
+  }
+
+  fetch(ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify(data)
+  }).then(r => {
+    if (r.ok) {
+      document.getElementById('success').style.display = 'block';
+      document.querySelector('.submit-btn').disabled = true;
+    } else { alert('Submission failed. Please try again or contact your manager.'); }
+  }).catch(() => alert('Network error. Please check your connection and try again.'));
+}
+
+addItem('', '', '');
+</script>
+</body>
+</html>
